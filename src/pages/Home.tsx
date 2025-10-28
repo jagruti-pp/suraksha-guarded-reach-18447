@@ -1,5 +1,5 @@
 import { MapPin, Phone, Video, Mic } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import SOSButton from "@/components/SOSButton";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,7 +7,8 @@ import FakeCallDialog from "@/components/FakeCallDialog";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useMediaRecorder } from "@/hooks/useMediaRecorder";
 import { useContacts } from "@/hooks/useContacts";
-import { playVoiceAlert, playAlarmSound } from "@/utils/audioUtils";
+import { useShakeDetection } from "@/hooks/useShakeDetection";
+import { playVoiceAlert, playAlarmSound, playEmergencySiren } from "@/utils/audioUtils";
 import { toast } from "sonner";
 
 const Home = () => {
@@ -15,6 +16,38 @@ const Home = () => {
   const { getCurrentLocation, location, loading } = useGeolocation();
   const { isRecording, startRecording, stopRecording, downloadRecording, recordedBlob } = useMediaRecorder();
   const { contacts, notifyContacts } = useContacts();
+  const sosTriggeredRef = useRef(false);
+
+  // Shake detection for SOS
+  useShakeDetection(() => {
+    if (!sosTriggeredRef.current && contacts.length > 0) {
+      handleSOSActivation();
+    }
+  }, { threshold: 15, timeout: 1000 });
+
+  const handleSOSActivation = () => {
+    sosTriggeredRef.current = true;
+    
+    playEmergencySiren();
+    playVoiceAlert("Emergency! SOS activated! Sending alerts to emergency contacts!");
+    
+    toast.error("🚨 SOS ACTIVATED by shake! Sending emergency alerts...", {
+      duration: 5000,
+    });
+
+    getCurrentLocation();
+    
+    setTimeout(() => {
+      if (location) {
+        notifyContacts(
+          `🚨 EMERGENCY SOS from Suraksha Kavach!\nI need immediate help! This is an emergency!`,
+          location
+        );
+        toast.success(`Emergency alerts sent to ${contacts.length} contacts!`);
+      }
+      sosTriggeredRef.current = false;
+    }, 2000);
+  };
 
   const handleFakeCall = () => {
     setFakeCallOpen(true);
