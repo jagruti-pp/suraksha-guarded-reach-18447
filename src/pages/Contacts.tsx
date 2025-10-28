@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Phone, Mail, Trash2, MessageSquare } from "lucide-react";
+import { Plus, Phone, Mail, Trash2, MessageSquare, Pencil } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useContacts } from "@/hooks/useContacts";
 
 const Contacts = () => {
-  const { contacts, addContact, deleteContact, notifyContacts } = useContacts();
+  const { contacts, addContact, deleteContact, updateContact, notifyContacts } = useContacts();
   
   const [newContact, setNewContact] = useState({
     name: "",
@@ -24,6 +24,7 @@ const Contacts = () => {
   });
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingContact, setEditingContact] = useState<string | null>(null);
 
   const handleAddContact = () => {
     if (!newContact.name || !newContact.phone) {
@@ -31,15 +32,31 @@ const Contacts = () => {
       return;
     }
 
-    if (contacts.length >= 5) {
-      toast.error("Maximum 5 emergency contacts allowed");
-      return;
+    if (editingContact) {
+      updateContact(editingContact, newContact);
+      toast.success("Contact updated successfully");
+    } else {
+      if (contacts.length >= 5) {
+        toast.error("Maximum 5 emergency contacts allowed");
+        return;
+      }
+      addContact(newContact);
+      toast.success("Emergency contact added successfully");
     }
-
-    addContact(newContact);
+    
     setNewContact({ name: "", phone: "", email: "" });
+    setEditingContact(null);
     setDialogOpen(false);
-    toast.success("Emergency contact added successfully");
+  };
+
+  const handleEditContact = (contact: typeof contacts[0]) => {
+    setNewContact({
+      name: contact.name,
+      phone: contact.phone,
+      email: contact.email || "",
+    });
+    setEditingContact(contact.id);
+    setDialogOpen(true);
   };
 
   const handleDeleteContact = (id: string) => {
@@ -73,7 +90,7 @@ const Contacts = () => {
           </DialogTrigger>
           <DialogContent className="glass">
             <DialogHeader>
-              <DialogTitle>Add Emergency Contact</DialogTitle>
+              <DialogTitle>{editingContact ? "Edit Contact" : "Add Emergency Contact"}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div className="space-y-2">
@@ -112,7 +129,7 @@ const Contacts = () => {
                 />
               </div>
               <Button onClick={handleAddContact} className="w-full">
-                Add Contact
+                {editingContact ? "Update Contact" : "Add Contact"}
               </Button>
             </div>
           </DialogContent>
@@ -145,14 +162,24 @@ const Contacts = () => {
                       )}
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDeleteContact(contact.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEditContact(contact)}
+                      className="text-primary hover:text-primary"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteContact(contact.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))
