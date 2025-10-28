@@ -22,40 +22,22 @@ const Home = () => {
   };
 
   const handleShareLocation = () => {
+    if (contacts.length === 0) {
+      toast.error("Please add emergency contacts first!");
+      return;
+    }
+
     toast.loading("Getting your location...");
     getCurrentLocation();
     
     setTimeout(() => {
       if (location) {
-        const mapsUrl = `https://maps.google.com/?q=${location.latitude},${location.longitude}`;
-        
-        if (contacts.length > 0) {
-          // Send to emergency contacts
-          notifyContacts(
-            `📍 Location Share from Suraksha Kavach\nI'm sharing my current location with you.`,
-            location
-          );
-          toast.success(`Location shared with ${contacts.length} contacts!`);
-        } else {
-          // Fallback to general sharing
-          const shareText = `📍 Location Share\nLat: ${location.latitude.toFixed(6)}\nLon: ${location.longitude.toFixed(6)}\nMap: ${mapsUrl}`;
-          
-          if (navigator.share) {
-            navigator.share({
-              title: 'My Location',
-              text: shareText,
-              url: mapsUrl,
-            }).then(() => {
-              toast.success("Location shared successfully!");
-            }).catch(() => {
-              navigator.clipboard.writeText(shareText);
-              toast.success("Location copied to clipboard!");
-            });
-          } else {
-            navigator.clipboard.writeText(shareText);
-            toast.success("Location copied to clipboard!");
-          }
-        }
+        // Automatically send alert to ALL emergency contacts
+        notifyContacts(
+          `🚨 LOCATION ALERT from Suraksha Kavach\nI'm sharing my current location with you. Please check on me!`,
+          location
+        );
+        toast.success(`🚨 Alert sent to all ${contacts.length} emergency contacts with your live location!`);
       } else {
         toast.error("Unable to get location. Please enable location services.");
       }
