@@ -68,17 +68,26 @@ export const useContacts = () => {
       ? `https://maps.google.com/?q=${location.latitude},${location.longitude}`
       : '';
     
-    contacts.forEach(contact => {
-      const fullMessage = `${message}\n${mapsUrl ? `Location: ${mapsUrl}` : ''}`;
+    contacts.forEach((contact, index) => {
+      const fullMessage = `${message}${mapsUrl ? `\n\nLocation: ${mapsUrl}` : ''}`;
       
-      // Try to open SMS app
-      const smsUrl = `sms:${contact.phone}?body=${encodeURIComponent(fullMessage)}`;
+      // Clean phone number (remove spaces, hyphens, etc.)
+      const cleanPhone = contact.phone.replace(/[^0-9+]/g, '');
       
-      // Try WhatsApp as alternative
-      const whatsappUrl = `https://wa.me/${contact.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(fullMessage)}`;
+      // Create SMS and WhatsApp URLs
+      const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(fullMessage)}`;
+      const whatsappUrl = `https://wa.me/${cleanPhone.replace(/\+/g, '')}?text=${encodeURIComponent(fullMessage)}`;
       
-      // Open in new window (user can choose which to use)
-      window.open(smsUrl, '_blank');
+      // Open with slight delay to avoid popup blocking
+      setTimeout(() => {
+        // Try SMS first (works better on mobile)
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          window.open(smsUrl, '_blank');
+        } else {
+          // On desktop, offer WhatsApp Web
+          window.open(whatsappUrl, '_blank');
+        }
+      }, index * 300); // Stagger by 300ms to avoid popup blockers
     });
   };
 

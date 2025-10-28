@@ -202,11 +202,13 @@ const Contacts = () => {
         <Card className="glass p-6 space-y-3">
           <h3 className="font-semibold text-primary">How it works</h3>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>• Add up to 5 trusted emergency contacts</li>
-            <li>• They'll receive SMS alerts when you trigger SOS</li>
-            <li>• Your live location will be shared with them</li>
-            <li>• They'll get real-time updates on your safety</li>
-            <li>• Click "Send Test Alert" to test notifications</li>
+            <li>• Add up to 5 trusted emergency contacts with real phone numbers</li>
+            <li>• Format: +91 XXXXX XXXXX or any country code</li>
+            <li>• When you trigger SOS, your real GPS location is shared</li>
+            <li>• On mobile: Opens SMS app with pre-filled message</li>
+            <li>• On desktop: Opens WhatsApp Web with location link</li>
+            <li>• Google Maps link included for easy navigation</li>
+            <li>• Test the feature with "Send Test Alert" button</li>
           </ul>
         </Card>
       </div>
