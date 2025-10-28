@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Phone, Mail, Trash2 } from "lucide-react";
+import { Plus, Phone, Mail, Trash2, MessageSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,40 +12,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-
-interface Contact {
-  id: string;
-  name: string;
-  phone: string;
-  email?: string;
-}
+import { useContacts } from "@/hooks/useContacts";
 
 const Contacts = () => {
-  const [contacts, setContacts] = useState<Contact[]>([
-    {
-      id: "1",
-      name: "Mom",
-      phone: "+91 98765 43210",
-      email: "mom@example.com",
-    },
-    {
-      id: "2",
-      name: "Dad",
-      phone: "+91 98765 43211",
-    },
-    {
-      id: "3",
-      name: "Best Friend",
-      phone: "+91 98765 43212",
-      email: "friend@example.com",
-    },
-  ]);
-
+  const { contacts, addContact, deleteContact, notifyContacts } = useContacts();
+  
   const [newContact, setNewContact] = useState({
     name: "",
     phone: "",
     email: "",
   });
+
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleAddContact = () => {
     if (!newContact.name || !newContact.phone) {
@@ -58,19 +36,20 @@ const Contacts = () => {
       return;
     }
 
-    const contact: Contact = {
-      id: Date.now().toString(),
-      ...newContact,
-    };
-
-    setContacts([...contacts, contact]);
+    addContact(newContact);
     setNewContact({ name: "", phone: "", email: "" });
+    setDialogOpen(false);
     toast.success("Emergency contact added successfully");
   };
 
   const handleDeleteContact = (id: string) => {
-    setContacts(contacts.filter((c) => c.id !== id));
+    deleteContact(id);
     toast.success("Contact removed");
+  };
+
+  const handleTestAlert = () => {
+    notifyContacts("🚨 TEST ALERT: This is a test emergency notification from Suraksha Kavach");
+    toast.success("Test alerts sent to all contacts");
   };
 
   return (
@@ -85,7 +64,7 @@ const Contacts = () => {
         </div>
 
         {/* Add Contact Button */}
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button className="w-full h-14 text-lg font-semibold gap-2">
               <Plus className="w-5 h-5" />
@@ -180,6 +159,18 @@ const Contacts = () => {
           )}
         </div>
 
+        {/* Test Alert Button */}
+        {contacts.length > 0 && (
+          <Button 
+            onClick={handleTestAlert}
+            variant="outline"
+            className="w-full h-12 gap-2"
+          >
+            <MessageSquare className="w-5 h-5" />
+            Send Test Alert to All Contacts
+          </Button>
+        )}
+
         {/* Info Card */}
         <Card className="glass p-6 space-y-3">
           <h3 className="font-semibold text-primary">How it works</h3>
@@ -188,6 +179,7 @@ const Contacts = () => {
             <li>• They'll receive SMS alerts when you trigger SOS</li>
             <li>• Your live location will be shared with them</li>
             <li>• They'll get real-time updates on your safety</li>
+            <li>• Click "Send Test Alert" to test notifications</li>
           </ul>
         </Card>
       </div>
