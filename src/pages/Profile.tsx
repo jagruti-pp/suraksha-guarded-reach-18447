@@ -5,9 +5,11 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Profile = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const { signOut, user } = useAuth();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -38,8 +40,10 @@ const Profile = () => {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold">User Name</h2>
-              <p className="text-muted-foreground">user@example.com</p>
+              <h2 className="text-2xl font-bold">
+                {user?.user_metadata?.name || "User Name"}
+              </h2>
+              <p className="text-muted-foreground">{user?.email || "user@example.com"}</p>
               <Button variant="link" className="px-0 h-auto mt-1 text-primary">
                 Edit Profile
               </Button>
@@ -141,7 +145,7 @@ const Profile = () => {
           <Button
             variant="outline"
             className="w-full justify-start gap-3"
-            onClick={() => toast.success("Logged out successfully")}
+            onClick={signOut}
           >
             <LogOut className="w-5 h-5" />
             <span>Log Out</span>
