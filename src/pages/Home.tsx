@@ -1,6 +1,7 @@
 import { MapPin, Phone, Video, Mic } from "lucide-react";
 import { useState, useRef } from "react";
 import SOSButton from "@/components/SOSButton";
+import PermissionsCheck from "@/components/PermissionsCheck";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import FakeCallDialog from "@/components/FakeCallDialog";
@@ -104,6 +105,9 @@ const Home = () => {
           <h1 className="text-3xl font-bold text-primary">Suraksha Kavach</h1>
           <p className="text-muted-foreground">You are safe with us</p>
         </div>
+
+        {/* Permissions Check */}
+        <PermissionsCheck />
 
         {/* Status Card */}
         <Card className="glass p-6 space-y-4">

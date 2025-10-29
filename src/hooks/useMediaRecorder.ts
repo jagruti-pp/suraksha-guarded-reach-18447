@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Camera } from '@capacitor/camera';
 import { toast } from 'sonner';
 
 export const useMediaRecorder = () => {
@@ -9,6 +10,19 @@ export const useMediaRecorder = () => {
 
   const startRecording = async () => {
     try {
+      // Check camera permission first
+      const permissionStatus = await Camera.checkPermissions();
+      
+      if (permissionStatus.camera !== 'granted' && permissionStatus.photos !== 'granted') {
+        // Request permission
+        const requestResult = await Camera.requestPermissions({ permissions: ['camera', 'photos'] });
+        
+        if (requestResult.camera !== 'granted' && requestResult.photos !== 'granted') {
+          toast.error('Camera permission denied. Please enable camera access in your device settings.');
+          return;
+        }
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user' },
         audio: true,
