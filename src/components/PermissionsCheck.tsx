@@ -9,25 +9,11 @@ const PermissionsCheck = () => {
   const { permissions, loading, requestCameraPermission, requestLocationPermission } = usePermissions();
 
   useEffect(() => {
-    // Auto-request permissions on first load if any permission is missing
-    const requestPermissionsOnMount = async () => {
-      if (!loading && (!permissions.camera || !permissions.location)) {
-        setShowCard(true);
-        
-        // Auto-request location if not granted
-        if (!permissions.location) {
-          await requestLocationPermission();
-        }
-        
-        // Auto-request camera if not granted
-        if (!permissions.camera) {
-          await requestCameraPermission();
-        }
-      }
-    };
-    
-    requestPermissionsOnMount();
-  }, [loading, permissions.camera, permissions.location]);
+    // Show permissions card on first load if any permission is missing
+    if (!loading && (!permissions.camera || !permissions.location)) {
+      setShowCard(true);
+    }
+  }, [loading, permissions]);
 
   if (loading || !showCard) return null;
 
