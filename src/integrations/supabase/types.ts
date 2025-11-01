@@ -14,39 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      location_history: {
-        Row: {
-          accuracy: number | null
-          created_at: string
-          event_type: string
-          id: string
-          latitude: number
-          longitude: number
-          notes: string | null
-          user_id: string
-        }
-        Insert: {
-          accuracy?: number | null
-          created_at?: string
-          event_type?: string
-          id?: string
-          latitude: number
-          longitude: number
-          notes?: string | null
-          user_id: string
-        }
-        Update: {
-          accuracy?: number | null
-          created_at?: string
-          event_type?: string
-          id?: string
-          latitude?: number
-          longitude?: number
-          notes?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string

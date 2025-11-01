@@ -9,7 +9,6 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { useMediaRecorder } from "@/hooks/useMediaRecorder";
 import { useContacts } from "@/hooks/useContacts";
 import { useShakeDetection } from "@/hooks/useShakeDetection";
-import { useLocationHistory } from "@/hooks/useLocationHistory";
 import { LocationMap } from "@/components/LocationMap";
 import { SafetyChat } from "@/components/SafetyChat";
 import { playVoiceAlert, playAlarmSound, playEmergencySiren } from "@/utils/audioUtils";
@@ -20,7 +19,6 @@ const Home = () => {
   const { getCurrentLocation, location, loading } = useGeolocation();
   const { isRecording, startRecording, stopRecording, downloadRecording, recordedBlob } = useMediaRecorder();
   const { contacts, notifyContacts } = useContacts();
-  const { saveLocation } = useLocationHistory();
   const sosTriggeredRef = useRef(false);
 
   // Shake detection for SOS
@@ -48,7 +46,6 @@ const Home = () => {
           `🚨 EMERGENCY SOS from Suraksha Kavach!\nI need immediate help! This is an emergency!`,
           location
         );
-        saveLocation(location.latitude, location.longitude, location.accuracy, 'sos', 'SOS activated');
         toast.success(`Emergency alerts sent to ${contacts.length} contacts!`);
       }
       sosTriggeredRef.current = false;
@@ -76,7 +73,6 @@ const Home = () => {
           `🚨 LOCATION ALERT from Suraksha Kavach\nI'm sharing my current location with you. Please check on me!`,
           location
         );
-        saveLocation(location.latitude, location.longitude, location.accuracy, 'manual', 'Manual location share');
         toast.success(`🚨 Alert sent to all ${contacts.length} emergency contacts with your live location!`);
       } else {
         toast.error("Unable to get location. Please enable location services.");
