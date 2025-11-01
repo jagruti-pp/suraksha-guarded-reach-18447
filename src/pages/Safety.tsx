@@ -3,8 +3,15 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { LocationMap } from "@/components/LocationMap";
+import { LocationHistoryDialog } from "@/components/LocationHistoryDialog";
 
 const Safety = () => {
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const { location, getCurrentLocation } = useGeolocation();
+
   const handleToggle = (feature: string, enabled: boolean) => {
     toast.success(`${feature} ${enabled ? "enabled" : "disabled"}`);
   };
@@ -88,17 +95,30 @@ const Safety = () => {
 
         {/* Location Tracking */}
         <Card className="glass p-6 space-y-4">
-          <h3 className="font-semibold">Location Tracking</h3>
-          <div className="aspect-video bg-muted/30 rounded-lg flex items-center justify-center">
-            <MapPin className="w-12 h-12 text-muted-foreground" />
-          </div>
+          <h3 className="font-semibold">Current Location</h3>
+          {location ? (
+            <LocationMap latitude={location.latitude} longitude={location.longitude} />
+          ) : (
+            <div className="aspect-video bg-muted/30 rounded-lg flex flex-col items-center justify-center gap-3">
+              <MapPin className="w-12 h-12 text-muted-foreground" />
+              <Button onClick={getCurrentLocation} variant="outline">
+                Get Current Location
+              </Button>
+            </div>
+          )}
           <p className="text-sm text-muted-foreground">
             Your location will be shared with emergency contacts when SOS is activated
           </p>
-          <Button className="w-full" variant="outline">
+          <Button 
+            className="w-full" 
+            variant="outline"
+            onClick={() => setHistoryOpen(true)}
+          >
             View Tracking History
           </Button>
         </Card>
+
+        <LocationHistoryDialog open={historyOpen} onOpenChange={setHistoryOpen} />
 
         {/* Emergency Protocol */}
         <Card className="glass p-6 space-y-3">
