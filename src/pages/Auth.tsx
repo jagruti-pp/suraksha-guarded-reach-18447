@@ -6,11 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from 'sonner';
 import logo from '@/assets/logo_suraksha.png';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [homeAddress, setHomeAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
@@ -33,8 +36,12 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!phoneNumber || !homeAddress) {
+      toast('Please fill in all fields', { style: { background: '#ef4444', color: 'white' } });
+      return;
+    }
     setLoading(true);
-    await signUp(email, password);
+    await signUp(email, password, { phone_number: phoneNumber, home_address: homeAddress });
     setLoading(false);
   };
 
@@ -110,6 +117,28 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-phone">Phone Number</Label>
+                  <Input
+                    id="signup-phone"
+                    type="tel"
+                    placeholder="Enter your phone number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-address">Home Address</Label>
+                  <Input
+                    id="signup-address"
+                    type="text"
+                    placeholder="Enter your home address"
+                    value={homeAddress}
+                    onChange={(e) => setHomeAddress(e.target.value)}
+                    required
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>

@@ -9,6 +9,8 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { useMediaRecorder } from "@/hooks/useMediaRecorder";
 import { useContacts } from "@/hooks/useContacts";
 import { useShakeDetection } from "@/hooks/useShakeDetection";
+import { LocationMap } from "@/components/LocationMap";
+import { SafetyChat } from "@/components/SafetyChat";
 import { playVoiceAlert, playAlarmSound, playEmergencySiren } from "@/utils/audioUtils";
 import { toast } from "sonner";
 
@@ -123,6 +125,11 @@ const Home = () => {
           </p>
         </Card>
 
+        {/* Location Map */}
+        {location && (
+          <LocationMap latitude={location.latitude} longitude={location.longitude} />
+        )}
+
         {/* SOS Button */}
         <div className="flex justify-center py-8">
           <SOSButton />
@@ -172,6 +179,7 @@ const Home = () => {
         </div>
 
         <FakeCallDialog open={fakeCallOpen} onOpenChange={setFakeCallOpen} />
+        <SafetyChat />
 
         {/* Safety Tips */}
         <Card className="glass p-6 space-y-3">
