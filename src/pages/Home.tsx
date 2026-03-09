@@ -95,8 +95,14 @@ const Home = () => {
 
   const handleVoiceAlert = () => {
     playAlarmSound();
-    playVoiceAlert("Alert! Emergency situation! Help required immediately!");
-    toast.warning("Voice alert activated! Loud alarm playing...");
+    playVoiceAlert("Help me! Help me! Somebody please help me!");
+    setTimeout(() => {
+      playVoiceAlert("Help me! I am in danger! Please help me!");
+    }, 3000);
+    setTimeout(() => {
+      playVoiceAlert("Help! Help! Someone call the police! Help me!");
+    }, 6000);
+    toast.warning("Voice alert activated! Shouting for help...");
   };
 
   return (
